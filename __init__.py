@@ -1,10 +1,20 @@
-"""Test plugin package."""
+"""Local test plugin package."""
+
+import os
 
 from semantic_kernel.functions import kernel_function
 
 
 class TestPlugin:
     """A test plugin with some basic functions."""
+
+    @classmethod
+    def get_plugin_info(cls):
+        """Get plugin information."""
+        return {
+            "name": "test_plugin",
+            "description": "A test plugin with basic text manipulation functions"
+        }
 
     @kernel_function(description="Greet someone by name", name="greet")
     def greet(self, name: str) -> str:
@@ -16,7 +26,7 @@ class TestPlugin:
         Returns:
             A greeting message
         """
-        return f"Hello, {name}! Nice to meet you!"
+        return f"Hello, {name}! Nice to meet you! (from remote plugin)"
 
     @kernel_function(description="Echo back the input", name="echo")
     def echo(self, input: str) -> str:
@@ -28,4 +38,19 @@ class TestPlugin:
         Returns:
             The same text that was input
         """
-        return input
+        return f"{input} (from remote plugin)"
+
+    @kernel_function(
+        description="Sign a message with the configured signature", name="sign"
+    )
+    def sign(self, message: str) -> str:
+        """Sign a message with the configured signature.
+
+        Args:
+            message: The message to sign
+
+        Returns:
+            The signed message
+        """
+        signature = os.getenv("AGENT_VAR_SIGNATURE", "Anonymous")
+        return f"{message}\n\n(from remote plugin)\n\nBest regards,\n{signature}"
